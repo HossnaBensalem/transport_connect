@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 // Pages
+import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
@@ -21,6 +22,7 @@ function AppContent() {
     <>
       <Routes>
         {/* Public Routes */}
+         <Route path="/" element={<Home />} />
         <Route 
           path="/login" 
           element={user ? <Navigate to="/dashboard" /> : <Login />} 

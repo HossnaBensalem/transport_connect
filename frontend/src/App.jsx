@@ -4,6 +4,8 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 // Components
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute';
 // Pages
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
@@ -19,32 +21,40 @@ function AppContent() {
         <main className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </main>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route 
-          path="/login" 
-          element={user ? <Navigate to="/dashboard" /> : <Login />} 
-        />
-        <Route 
-          path="/register" 
-          element={user ? <Navigate to="/dashboard" /> : <Register />} 
-        />
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-grow">
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route 
+            path="/login" 
+            element={user ? <Navigate to="/dashboard" /> : <Login />} 
+          />
+          <Route 
+            path="/register" 
+            element={user ? <Navigate to="/dashboard" /> : <Register />} 
+          />
 
-        {/* Catch all */}
-        <Route 
-          path="*" 
-          element={<Navigate to={user ? "/dashboard" : "/login"} />} 
-        />
-      </Routes>
+          {/* Protected Routes example (if you want to add dashboard or others) */}
+          {/* <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} /> */}
+
+          {/* Catch all */}
+          <Route 
+            path="*" 
+            element={<Navigate to={user ? "/dashboard" : "/login"} />} 
+          />
+        </Routes>
+      </main>
+      <Footer />
       <Toaster position="top-right" />
-    </>
+    </div>
   );
 }
 

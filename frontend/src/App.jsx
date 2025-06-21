@@ -10,6 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import Dashboard from './pages/Dashboard';
 
 function AppContent() {
   const { user, loading } = useAuth();

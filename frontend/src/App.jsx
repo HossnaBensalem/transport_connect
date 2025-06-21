@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
+// Components
+import Navbar from './components/Navbar';
 // Pages
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
@@ -12,8 +14,11 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <main className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </main>
       </div>
     );
   }
@@ -22,7 +27,7 @@ function AppContent() {
     <>
       <Routes>
         {/* Public Routes */}
-         <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route 
           path="/login" 
           element={user ? <Navigate to="/dashboard" /> : <Login />} 
@@ -32,7 +37,7 @@ function AppContent() {
           element={user ? <Navigate to="/dashboard" /> : <Register />} 
         />
 
-        {/* If logged in, redirect to dashboard */}
+        {/* Catch all */}
         <Route 
           path="*" 
           element={<Navigate to={user ? "/dashboard" : "/login"} />} 

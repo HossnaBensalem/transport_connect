@@ -81,8 +81,16 @@ function AppContent() {
             } 
           />
 
-          {/* Protected Routes example (if you want to add dashboard or others) */}
-          {/* <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} /> */}
+          <Route 
+  path="/edit-announcement/:id" 
+  element={
+    <ProtectedRoute roles={['driver']}>
+      <CreateAnnouncement />
+    </ProtectedRoute>
+  } 
+/>
+
+         
 
           {/* Catch all */}
           <Route 

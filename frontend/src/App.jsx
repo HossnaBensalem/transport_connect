@@ -12,6 +12,7 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
+import MyAnnouncements from './pages/driver/MyAnnouncements';
 import CreateAnnouncement from './pages/driver/CreateAnnouncement';
 
 function AppContent() {
@@ -63,7 +64,14 @@ function AppContent() {
           />
 
             {/* Driver Routes */}
-       
+          <Route 
+            path="/my-announcements" 
+            element={
+              <ProtectedRoute roles={['driver']}>
+                <MyAnnouncements />
+              </ProtectedRoute>
+            } 
+          />
           <Route 
             path="/create-announcement" 
             element={

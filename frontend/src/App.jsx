@@ -12,6 +12,7 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
+import CreateAnnouncement from './pages/driver/CreateAnnouncement';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -57,6 +58,17 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            } 
+          />
+
+            {/* Driver Routes */}
+       
+          <Route 
+            path="/create-announcement" 
+            element={
+              <ProtectedRoute roles={['driver']}>
+                <CreateAnnouncement />
               </ProtectedRoute>
             } 
           />

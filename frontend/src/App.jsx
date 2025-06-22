@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -41,6 +42,23 @@ function AppContent() {
           <Route 
             path="/register" 
             element={user ? <Navigate to="/dashboard" /> : <Register />} 
+          />
+            {/* Protected Routes */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
           />
 
           {/* Protected Routes example (if you want to add dashboard or others) */}

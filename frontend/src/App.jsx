@@ -14,6 +14,7 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import MyAnnouncements from './pages/driver/MyAnnouncements';
 import CreateAnnouncement from './pages/driver/CreateAnnouncement';
+import Requests from './pages/driver/Requests';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -89,6 +90,15 @@ function AppContent() {
     </ProtectedRoute>
   } 
 />
+
+ <Route 
+            path="/requests" 
+            element={
+              <ProtectedRoute roles={['driver']}>
+                <Requests />
+              </ProtectedRoute>
+            } 
+          />
 
          
 

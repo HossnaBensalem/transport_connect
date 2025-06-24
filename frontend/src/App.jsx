@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+
 // Pages
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
@@ -38,75 +39,49 @@ function AppContent() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
-          <Route 
-            path="/login" 
-            element={user ? <Navigate to="/dashboard" /> : <Login />} 
-          />
-          <Route 
-            path="/register" 
-            element={user ? <Navigate to="/dashboard" /> : <Register />} 
-          />
-            {/* Protected Routes */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } 
-          />
+          <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
+          <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
 
-            {/* Driver Routes */}
-          <Route 
-            path="/my-announcements" 
-            element={
-              <ProtectedRoute roles={['driver']}>
-                <MyAnnouncements />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/create-announcement" 
-            element={
-              <ProtectedRoute roles={['driver']}>
-                <CreateAnnouncement />
-              </ProtectedRoute>
-            } 
-          />
+          {/* Protected Routes */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
 
-          <Route 
-  path="/edit-announcement/:id" 
-  element={
-    <ProtectedRoute roles={['driver']}>
-      <CreateAnnouncement />
-    </ProtectedRoute>
-  } 
-/>
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
 
- <Route 
-            path="/requests" 
-            element={
-              <ProtectedRoute roles={['driver']}>
-                <Requests />
-              </ProtectedRoute>
-            } 
-          />
+          {/* Driver-only routes */}
+          <Route path="/my-announcements" element={
+            <ProtectedRoute roles={['driver']}>
+              <MyAnnouncements />
+            </ProtectedRoute>
+          } />
 
-         
+          <Route path="/create-announcement" element={
+            <ProtectedRoute roles={['driver']}>
+              <CreateAnnouncement />
+            </ProtectedRoute>
+          } />
 
-          {/* Catch all */}
-          <Route 
-            path="*" 
-            element={<Navigate to={user ? "/dashboard" : "/login"} />} 
-          />
+          <Route path="/edit-announcement/:id" element={
+            <ProtectedRoute roles={['driver']}>
+              <CreateAnnouncement />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/requests" element={
+            <ProtectedRoute roles={['driver']}>
+              <Requests />
+            </ProtectedRoute>
+          } />
+
+          {/* Catch-all route */}
+          <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
         </Routes>
       </main>
       <Footer />
@@ -117,11 +92,9 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </Router>
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

@@ -67,4 +67,11 @@ const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Please stop the process using it or choose another port.`);
+    process.exit(1);
+  } else {
+    console.error(`Server error:`, err);
+  }
 });

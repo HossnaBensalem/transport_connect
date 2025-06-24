@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { 
@@ -237,14 +238,13 @@ const Requests = () => {
                 {/* Actions */}
                 <div className="mt-6 flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <button className="btn-outline flex items-center space-x-1">
+                    <Link 
+                      to={`/chat?sender=${request.sender._id}&announcement=${request.announcement._id}`}
+                      className="btn-outline flex items-center space-x-1"
+                    >
                       <MessageCircle className="h-4 w-4" />
                       <span>Message</span>
-                    </button>
-                    <button className="btn-outline flex items-center space-x-1">
-                      <Eye className="h-4 w-4" />
-                      <span>View Profile</span>
-                    </button>
+                    </Link>
                   </div>
 
                   {request.status === 'pending' && (

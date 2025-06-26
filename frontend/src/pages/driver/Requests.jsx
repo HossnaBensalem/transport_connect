@@ -20,6 +20,8 @@ const Requests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedSender, setSelectedSender] = useState(null);
 
   useEffect(() => {
     fetchRequests();
@@ -47,6 +49,19 @@ const Requests = () => {
     } catch (error) {
       toast.error('Failed to update request status');
     }
+  };
+
+  const handleViewProfile = (sender) => {
+    setSelectedSender(sender);
+    setShowProfileModal(true);
+  };
+
+  // Helper function to safely display rating
+  const displayRating = (rating) => {
+    if (rating === null || rating === undefined || !Number.isFinite(rating)) {
+      return 'New';
+    }
+    return Number(rating).toFixed(1);
   };
 
   const getStatusColor = (status) => {
@@ -136,18 +151,18 @@ const Requests = () => {
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 bg-secondary-600 rounded-full flex items-center justify-center">
                       <span className="text-white font-medium">
-                        {request.sender.firstName.charAt(0)}
+                        {request.sender?.firstName?.charAt(0) || 'S'}
                       </span>
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">
-                        {request.sender.firstName} {request.sender.lastName}
+                        {request.sender?.firstName || 'Sender'} {request.sender?.lastName || ''}
                       </h3>
                       <div className="flex items-center space-x-2">
                         <div className="flex items-center space-x-1">
                           <Star className="h-4 w-4 text-yellow-400" />
                           <span className="text-sm text-gray-600">
-                            {Number.isFinite(request.sender.rating) ? request.sender.rating.toFixed(1) : 'New'}
+                            {displayRating(request.sender?.rating)}
                           </span>
                         </div>
                         <span className="text-gray-300">•</span>
@@ -171,12 +186,12 @@ const Requests = () => {
                       <div className="flex items-center space-x-2 text-sm">
                         <MapPin className="h-4 w-4 text-primary-600" />
                         <span className="text-gray-600">From:</span>
-                        <span className="font-medium">{request.announcement.startLocation}</span>
+                        <span className="font-medium">{request.announcement?.startLocation}</span>
                       </div>
                       <div className="flex items-center space-x-2 text-sm">
                         <MapPin className="h-4 w-4 text-secondary-600" />
                         <span className="text-gray-600">To:</span>
-                        <span className="font-medium">{request.announcement.endLocation}</span>
+                        <span className="font-medium">{request.announcement?.endLocation}</span>
                       </div>
                       <div className="flex items-center space-x-2 text-sm">
                         <MapPin className="h-4 w-4 text-accent-600" />
@@ -197,13 +212,13 @@ const Requests = () => {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-600">Type:</span>
-                        <span className="font-medium capitalize">{request.cargoDetails.type}</span>
+                        <span className="font-medium capitalize">{request.cargoDetails?.type}</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-600">Weight:</span>
-                        <span className="font-medium">{request.cargoDetails.weight} kg</span>
+                        <span className="font-medium">{request.cargoDetails?.weight} kg</span>
                       </div>
-                      {request.cargoDetails.dimensions.length && (
+                      {request.cargoDetails?.dimensions?.length && (
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-600">Dimensions:</span>
                           <span className="font-medium">
@@ -220,7 +235,7 @@ const Requests = () => {
                 </div>
 
                 {/* Description */}
-                {request.cargoDetails.description && (
+                {request.cargoDetails?.description && (
                   <div className="mt-4">
                     <h4 className="font-medium text-gray-900 mb-2">Description</h4>
                     <p className="text-gray-600 text-sm">{request.cargoDetails.description}</p>
@@ -239,12 +254,19 @@ const Requests = () => {
                 <div className="mt-6 flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Link 
-                      to={`/chat?sender=${request.sender._id}&announcement=${request.announcement._id}`}
+                      to={`/chat?sender=${request.sender?._id}&announcement=${request.announcement?._id}`}
                       className="btn-outline flex items-center space-x-1"
                     >
                       <MessageCircle className="h-4 w-4" />
                       <span>Message</span>
                     </Link>
+                    <button 
+                      onClick={() => handleViewProfile(request.sender)}
+                      className="btn-outline flex items-center space-x-1"
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span>View Profile</span>
+                    </button>
                   </div>
 
                   {request.status === 'pending' && (
@@ -288,6 +310,69 @@ const Requests = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Sender Profile Modal */}
+        {showProfileModal && selectedSender && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <div className="text-center mb-6">
+                <div className="w-20 h-20 bg-secondary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-white text-2xl font-bold">
+                    {selectedSender.firstName?.charAt(0) || 'S'}
+                  </span>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900">
+                  {selectedSender.firstName} {selectedSender.lastName}
+                </h3>
+                <p className="text-gray-600">{selectedSender.email}</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Phone:</span>
+                  <span className="font-medium">{selectedSender.phone || 'Not provided'}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Rating:</span>
+                  <div className="flex items-center space-x-1">
+                    <Star className="h-4 w-4 text-yellow-400" />
+                    <span className="font-medium">{displayRating(selectedSender.rating)}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Member since:</span>
+                  <span className="font-medium">
+                    {format(new Date(selectedSender.createdAt || Date.now()), 'MMM yyyy')}
+                  </span>
+                </div>
+                {selectedSender.isVerified && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Status:</span>
+                    <span className="bg-green-100 text-green-800 text-sm px-2 py-1 rounded-full">
+                      Verified
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  onClick={() => setShowProfileModal(false)}
+                  className="btn-outline flex-1"
+                >
+                  Close
+                </button>
+                <Link
+                  to={`/chat?sender=${selectedSender._id}`}
+                  className="btn-primary flex-1 text-center"
+                  onClick={() => setShowProfileModal(false)}
+                >
+                  Send Message
+                </Link>
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -108,15 +108,6 @@ const MyAnnouncements = () => {
                     {announcement.status.charAt(0).toUpperCase() + announcement.status.slice(1)}
                   </span>
                   <div className="flex items-center space-x-2">
-                
-                    <Link
-                      to={`/edit-announcement/${announcement._id}`}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Edit"
-                    >
-                      <Edit3 className="h-4 w-4" />
-                    </Link>
-                   
                     <button
                       onClick={() => handleDelete(announcement._id)}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"

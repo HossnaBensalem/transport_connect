@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { 
@@ -16,11 +16,7 @@ import {
 
 const CreateAnnouncement = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const isEditMode = Boolean(id);
   const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(isEditMode); 
-  
   const [formData, setFormData] = useState({
     startLocation: '',
     endLocation: '',
@@ -42,45 +38,6 @@ const CreateAnnouncement = () => {
   const cargoTypeOptions = [
     'fragile', 'heavy', 'liquid', 'food', 'electronics', 'furniture', 'documents', 'other'
   ];
-
- 
-  useEffect(() => {
-    if (isEditMode) {
-      fetchAnnouncementData();
-    }
-  }, [id, isEditMode]);
-
-  const fetchAnnouncementData = async () => {
-    try {
-      const response = await axios.get(`/api/announcements/${id}`);
-      const announcement = response.data.announcement;
-      
-      // datetime-local input
-      const formattedDate = new Date(announcement.departureDate).toISOString().slice(0, 16);
-      
-      setFormData({
-        startLocation: announcement.startLocation || '',
-        endLocation: announcement.endLocation || '',
-        intermediateStops: announcement.intermediateStops || [],
-        departureDate: formattedDate,
-        maxDimensions: {
-          length: announcement.maxDimensions?.length || '',
-          width: announcement.maxDimensions?.width || '',
-          height: announcement.maxDimensions?.height || ''
-        },
-        maxWeight: announcement.maxWeight || '',
-        cargoTypes: announcement.cargoTypes || [],
-        availableSpace: announcement.availableSpace || '',
-        pricePerKg: announcement.pricePerKg || '',
-        description: announcement.description || ''
-      });
-    } catch (error) {
-      toast.error('Failed to load announcement data');
-      navigate('/my-announcements');
-    } finally {
-      setInitialLoading(false);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -133,7 +90,7 @@ const CreateAnnouncement = () => {
     setLoading(true);
 
     try {
-      const requestData = {
+      const response = await axios.post('/api/announcements', {
         ...formData,
         maxWeight: parseFloat(formData.maxWeight),
         availableSpace: parseFloat(formData.availableSpace),
@@ -143,54 +100,23 @@ const CreateAnnouncement = () => {
           width: parseFloat(formData.maxDimensions.width) || undefined,
           height: parseFloat(formData.maxDimensions.height) || undefined
         }
-      };
+      });
 
-      if (isEditMode) {
-     
-        await axios.put(`/api/announcements/${id}`, requestData);
-        toast.success('Announcement updated successfully!');
-      } else {
-      
-        await axios.post('/api/announcements', requestData);
-        toast.success('Announcement created successfully!');
-      }
-
+      toast.success('Announcement created successfully!');
       navigate('/my-announcements');
     } catch (error) {
-      const errorMessage = isEditMode 
-        ? 'Failed to update announcement' 
-        : 'Failed to create announcement';
-      toast.error(error.response?.data?.message || errorMessage);
+      toast.error(error.response?.data?.message || 'Failed to create announcement');
     } finally {
       setLoading(false);
     }
   };
 
-  
-  if (initialLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading announcement data...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            {isEditMode ? 'Edit Transport Announcement' : 'Create Transport Announcement'}
-          </h1>
-          <p className="text-gray-600 mt-2">
-            {isEditMode 
-              ? 'Update your transport details'
-              : 'Share your transport details to connect with cargo senders'
-            }
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900">Create Transport Announcement</h1>
+          <p className="text-gray-600 mt-2">Share your transport details to connect with cargo senders</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -449,10 +375,7 @@ const CreateAnnouncement = () => {
               disabled={loading}
               className={`btn-primary ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {loading 
-                ? (isEditMode ? 'Updating...' : 'Creating...') 
-                : (isEditMode ? 'Update Announcement' : 'Create Announcement')
-              }
+              {loading ? 'Creating...' : 'Create Announcement'}
             </button>
           </div>
         </form>
@@ -462,4 +385,3 @@ const CreateAnnouncement = () => {
 };
 
 export default CreateAnnouncement;
-

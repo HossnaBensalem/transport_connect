@@ -21,6 +21,11 @@ import Requests from './pages/driver/Requests';
 import MyRequests from './pages/sender/MyRequests';
 import Chat from './pages/Chat';
 
+// Admin Pages
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminAnnouncements from './pages/admin/AdminAnnouncements';
+
 function AppContent() {
   const { user, loading } = useAuth();
 
@@ -108,6 +113,14 @@ function AppContent() {
             } 
           />
           <Route 
+            path="/edit-announcement/:id" 
+            element={
+              <ProtectedRoute roles={['driver']}>
+                <CreateAnnouncement />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path="/requests" 
             element={
               <ProtectedRoute roles={['driver']}>
@@ -127,30 +140,38 @@ function AppContent() {
           />
 
           {/* Admin Routes */}
-          {/* <Route 
+          <Route 
             path="/admin" 
             element={
               <ProtectedRoute roles={['admin']}>
                 <AdminDashboard />
               </ProtectedRoute>
             } 
-          /> */}
-          {/* <Route 
+          />
+          <Route 
+            path="/admin/dashboard" 
+            element={
+              <ProtectedRoute roles={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path="/admin/users" 
             element={
               <ProtectedRoute roles={['admin']}>
                 <AdminUsers />
               </ProtectedRoute>
             } 
-          /> */}
-          {/* <Route 
+          />
+          <Route 
             path="/admin/announcements" 
             element={
               <ProtectedRoute roles={['admin']}>
                 <AdminAnnouncements />
               </ProtectedRoute>
             } 
-          /> */}
+          />
 
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/" />} />
@@ -164,11 +185,9 @@ function AppContent() {
 
 function App() {
   return (
-   
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-  
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

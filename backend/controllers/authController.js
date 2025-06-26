@@ -50,6 +50,8 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
+    console.log('🔐 Login attempt for email:', req.body.email); // Debug log
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -57,15 +59,33 @@ export const login = async (req, res) => {
 
     const { email, password } = req.body;
 
+    // البحث عن المستخدم مع كلمة المرور
     const user = await User.findOne({ email }).select('+password');
-    if (!user || !user.isActive) {
-      return res.status(401).json({ message: 'Invalid credentials or account inactive' });
-    }
-
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
+    
+    if (!user) {
+      console.log('❌ User not found for email:', email); // Debug log
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+
+    console.log('✅ User found:', user.firstName, user.lastName, '| Role:', user.role); // Debug log
+    console.log('🔍 User active status:', user.isActive); // Debug log
+
+    // التحقق من حالة المستخدم
+    if (!user.isActive) {
+      console.log('❌ User account is inactive'); // Debug log
+      return res.status(401).json({ message: 'Account is inactive' });
+    }
+
+    // التحقق من كلمة المرور - استخدام matchPassword بدلاً من comparePassword
+    const isMatch = await user.matchPassword(password);
+    console.log('🔐 Password match result:', isMatch); // Debug log
+    
+    if (!isMatch) {
+      console.log('❌ Password does not match'); // Debug log
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    console.log('✅ Login successful for user:', user.email); // Debug log
 
     const token = generateToken(user._id);
 
@@ -78,10 +98,12 @@ export const login = async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
-        isVerified: user.isVerified
+        isVerified: user.isVerified,
+        isActive: user.isActive
       }
     });
   } catch (error) {
+    console.error('❌ Login error:', error); // Debug log
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
@@ -100,7 +122,8 @@ export const getMe = async (req, res) => {
         phone: user.phone,
         isVerified: user.isVerified,
         rating: user.rating,
-        completedTransports: user.completedTransports
+        completedTransports: user.completedTransports,
+        isActive: user.isActive
       }
     });
   } catch (error) {
